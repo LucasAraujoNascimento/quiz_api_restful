@@ -2,34 +2,44 @@ import { Request, Response } from "express";
 import { QuestionModel, Question } from "../models/QuestionsAndAnswers";
 import { validate } from 'class-validator' ;
 
-export async function registerQuestion (req:Request, res:Response){
+interface AuthenticatedRequest extends Request {
+    user?: any;
+}
 
-    try{
+export async function registerQuestion (req:AuthenticatedRequest, res:Response){
 
-    const body = req.body;
+    if(req.user.admin){
 
-    if(!body){
-        throw new Error('Data is required');
-    }
+        try{
 
-    const newQuestion = new Question()
-    newQuestion.question = body.question;
-    newQuestion.options = body.options;
-    newQuestion.correct_answer = body.correct_answer;
+        const body = req.body;
 
-    const errors = await validate(newQuestion)
+        if(!body){
+            throw new Error('Data is required');
+        }
 
-    if(errors.length > 0){
-        res.status(400).json(errors);;
+        const newQuestion = new Question()
+        newQuestion.question = body.question;
+        newQuestion.options = body.options;
+        newQuestion.correct_answer = body.correct_answer;
+
+        const errors = await validate(newQuestion)
+
+        if(errors.length > 0){
+            res.status(400).json(errors);;
+        }else{
+            const question = await QuestionModel.create(newQuestion);
+            res.status(201).json(question)
+        }
+
+
+        }catch(e: any){
+            console.log(`ERROR: ${e.message}`)
+            res.status(500).json(e.message)
+        }
     }else{
-        const question = await QuestionModel.create(newQuestion);
-        res.status(201).json(question)
-    }
-
-
-    }catch(e: any){
-        console.log(`ERROR: ${e.message}`)
-        res.status(500).json(e.message)
+        console.log('Acess denied Not Admin!')
+        res.status(500).json('Acess denied Not Admin!')
     }
 }
 

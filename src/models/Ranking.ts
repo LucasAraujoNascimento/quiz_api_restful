@@ -6,8 +6,8 @@ export class Ranking{
     username!: string
 
     @IsNumber()
-
     score!: number
+    
     @IsString()
     response_time!: string
 }
