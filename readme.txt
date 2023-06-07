@@ -67,3 +67,13 @@ Podemos estar adicionando os valores do ranking
     }
 
 É Preciso ser admin para fazer alterações
+
+4 - Rota Logs funciona iguais as outras, precisa ser admin para fazer o registro
+
+    {
+        username:"string"
+        question:"string"
+        option:"string"
+        correct_answer:"number"
+        response_time:"string"
+    }
